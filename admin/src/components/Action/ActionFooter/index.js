@@ -1,6 +1,7 @@
 import React from 'react';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
+import { useCMEditViewDataManager, getYupInnerErrors } from '@strapi/helper-plugin';
 import { useReactQuery } from '../../../hooks/useReactQuery';
 import { getTrad } from '../../../utils/getTrad';
 import { Button } from '@strapi/design-system/Button';
@@ -10,6 +11,8 @@ import Cross from '@strapi/icons/Cross';
 import Write from '@strapi/icons/Write';
 import Pencil from '@strapi/icons/Pencil';
 import Trash from '@strapi/icons/Trash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 
 const ActionFooter = ({
 	mode,
@@ -23,19 +26,46 @@ const ActionFooter = ({
 }) => {
 	const { formatMessage } = useIntl();
 	const { actionMutations } = useReactQuery();
+	const { createYupSchema, allLayoutData, layout, isCreatingEntry, modifiedData, dispatch } =
+		useCMEditViewDataManager();
 
 	// action handlers
+	const validateCMData = async () => {
+		const schema = createYupSchema(
+			layout,
+			{
+				components: get(allLayoutData, 'components', {}),
+			},
+			{ isCreatingEntry, isDraft: false, isFromComponent: false }
+		);
+		let errors = {};
+
+		try {
+			await schema.validate(modifiedData, { abortEarly: false });
+		} catch (err) {
+			errors = getYupInnerErrors(err);
+		}
+		dispatch({
+			type: 'SET_FORM_ERRORS',
+			errors,
+		});
+		return errors;
+	};
+
 	const handleActionSave = async () => {
 		try {
 			if (action.id) {
 				await actionMutations.update.mutate(action);
 			} else {
-				await actionMutations.create.mutate({
-					mode,
-					entityId,
-					entitySlug,
-					...action,
-				});
+				const errors = await validateCMData();
+				if (isEmpty(errors)) {
+					await actionMutations.create.mutate({
+						mode,
+						entityId,
+						entitySlug,
+						...action,
+					});
+				}
 			}
 			setIsDisabled(true);
 		} catch (error) {
@@ -47,8 +77,11 @@ const ActionFooter = ({
 		setIsDisabled(false);
 	};
 
-	const handleActionAdd = () => {
-		setIsVisible(true);
+	const handleActionAdd = async () => {
+		const errors = await validateCMData();
+		if (isEmpty(errors)) {
+			setIsVisible(true);
+		}
 	};
 
 	const handleActionDelete = async () => {
@@ -63,7 +96,7 @@ const ActionFooter = ({
 
 	// add action
 	if (!isVisible) {
-		const addActionButtonColor = mode === 'publish' ? 'default' : 'secondary';
+		const addActionButtonColor = mode === 'publish' ? 'primary' : 'secondary';
 		const addActionButtonIcon = mode === 'publish' ? <Check /> : <Cross />;
 		return (
 			<Button
