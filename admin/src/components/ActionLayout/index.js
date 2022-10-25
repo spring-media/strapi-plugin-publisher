@@ -8,6 +8,7 @@ import { Action } from '../Action';
 
 const ActionLayout = () => {
 	const {
+		slug: modelId,
 		hasDraftAndPublish,
 		isCreatingEntry,
 		initialData: { slug, publishedAt },
@@ -32,7 +33,7 @@ const ActionLayout = () => {
 		<Box marginTop={4}>
 			<ActionLayoutHeader />
 			{actionModes().map((m, index) => (
-				<Action mode={m} key={index} entitySlug={slug} entityId={currentEntityId} />
+				<Action mode={m} key={index} entitySlug={modelId} entityId={currentEntityId} />
 			))}
 		</Box>
 	);
