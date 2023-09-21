@@ -1,5 +1,9 @@
 # strapi-plugin-publisher
 
+> **Important** \
+> Do not update this Plugin until Strapi is updated to 4.11.x.\
+> Version 1.3.7 is the latest version that is working with Kitchen for the moment.
+
 A plugin for [Strapi](https://github.com/strapi/strapi) that provides the ability to easily schedule publishing and unpublishing of any content type.
 
 [![Downloads](https://img.shields.io/npm/dm/strapi-plugin-publisher?style=for-the-badge)](https://img.shields.io/npm/dm/strapi-plugin-publisher?style=for-the-badge)
