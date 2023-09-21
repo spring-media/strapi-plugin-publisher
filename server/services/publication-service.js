@@ -35,10 +35,10 @@ module.exports = ({ strapi }) => ({
 		const unpublishedEntity = await strapi.entityService.update(uid, entityId, {
 			data: {
 				publishedAt: null,
-				populate: populateRelations
-					? getDeepPopulate(uid, {})
-					: getDeepPopulate(uid, { countMany: true, countOne: true }),
 			},
+			populate: populateRelations
+				? getDeepPopulate(uid, {})
+				: getDeepPopulate(uid, { countMany: true, countOne: true }),
 		});
 		const { hooks } = getPluginService('settingsService').get();
 		// emit unpublish event
@@ -56,6 +56,11 @@ module.exports = ({ strapi }) => ({
 		const entityId = record.entityId || 1;
 
 		const entity = await strapi.entityService.findOne(record.entitySlug, entityId);
+
+		// ensure entity exists before attempting mutations.
+		if (!entity) {
+			return;
+		}
 
 		// ensure entity is in correct publication status
 		if (!entity.publishedAt && mode === 'publish') {
