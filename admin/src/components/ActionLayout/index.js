@@ -9,7 +9,7 @@ import { Action } from '../Action';
 const actionModes = ['publish', 'unpublish'];
 
 const ActionLayout = () => {
-	const { slug, hasDraftAndPublish, isCreatingEntry } = useCMEditViewDataManager();
+	const { slug: modelId, hasDraftAndPublish, isCreatingEntry } = useCMEditViewDataManager();
 	const params = useParams();
 	const id = _get(params, 'id', null);
 	const currentEntityId = Number(id);
@@ -22,7 +22,7 @@ const ActionLayout = () => {
 		<Box marginTop={4}>
 			<ActionLayoutHeader />
 			{actionModes.map((m, index) => (
-				<Action mode={m} key={index} entitySlug={slug} entityId={currentEntityId} />
+				<Action mode={m} key={index} entitySlug={modelId} entityId={currentEntityId} />
 			))}
 		</Box>
 	);
