@@ -28,7 +28,7 @@
 	"dependencies": {
 		"lodash": "^4.17.21",
 		"react-query": "^3.39.3",
-		"yup": "^0.32.9"
+		"yup": "^1.0.0"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.22.5",
